@@ -1,0 +1,197 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ArchiveX — Your Smart Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#0f1923;--forest:#1a3d2b;--sage:#3a7d5c;
+  --mint:#74c69d;--cream:#fdf8f0;--parchment:#f5ede0;
+  --gold:#c9a84c;--gold-light:#e8c97e;--white:#ffffff;--muted:#8a8a8a;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Outfit',sans-serif;background:var(--ink);display:flex}
+
+.visual-panel{width:58%;height:100vh;position:relative;overflow:hidden;flex-shrink:0}
+.bg-image{
+  position:absolute;inset:0;
+  background:url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1400&q=80') center/cover no-repeat;
+  transform:scale(1.06);animation:slowZoom 20s ease-in-out infinite alternate;
+}
+@keyframes slowZoom{from{transform:scale(1.06)}to{transform:scale(1.14)}}
+.overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(15,25,35,0.88) 0%,rgba(26,61,43,0.72) 55%,rgba(15,25,35,0.55) 100%)}
+.particles{position:absolute;inset:0;pointer-events:none}
+.particle{position:absolute;width:3px;height:3px;background:rgba(201,168,76,0.7);border-radius:50%;animation:floatUp linear infinite}
+@keyframes floatUp{0%{transform:translateY(100vh);opacity:0}10%{opacity:1}90%{opacity:0.4}100%{transform:translateY(-80px);opacity:0}}
+
+.panel-content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:50px 56px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-mark{width:50px;height:50px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 20px rgba(201,168,76,0.4)}
+.brand-text{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--white)}
+.brand-text span{color:var(--gold-light)}
+
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.35);border-radius:100px;padding:6px 18px;color:var(--gold-light);font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:22px;width:fit-content;animation:fadeUp 0.8s ease both}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:64px;line-height:1.04;color:var(--white);font-weight:600;margin-bottom:18px;animation:fadeUp 0.8s 0.1s ease both}
+.hero-h1 em{color:var(--gold-light);font-style:italic}
+.hero-p{color:rgba(255,255,255,0.62);font-size:15px;line-height:1.75;max-width:400px;animation:fadeUp 0.8s 0.2s ease both}
+
+.pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px;animation:fadeUp 0.8s 0.3s ease both}
+.pill{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.13);border-radius:100px;padding:7px 15px;color:rgba(255,255,255,0.72);font-size:12px;backdrop-filter:blur(6px)}
+.pdot{width:5px;height:5px;background:var(--mint);border-radius:50%}
+
+.stats-row{display:flex;gap:36px;animation:fadeUp 0.8s 0.35s ease both}
+.sitem{border-left:2px solid var(--gold);padding-left:16px}
+.snum{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;color:var(--white)}
+.slabel{font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px}
+
+/* Book stack visual */
+.book-stack{position:absolute;bottom:52px;right:52px;display:flex;flex-direction:column;gap:6px;opacity:0.18;z-index:1}
+.bspine{height:22px;border-radius:4px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* AUTH PANEL */
+.auth-panel{width:42%;height:100vh;background:var(--cream);display:flex;align-items:center;justify-content:center;padding:48px 44px;overflow-y:auto;position:relative}
+.auth-panel::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,var(--forest),var(--sage),var(--gold))}
+.auth-inner{width:100%;max-width:380px}
+
+/* Library image collage at top of form */
+.form-img-row{display:flex;gap:8px;margin-bottom:28px;height:90px;border-radius:12px;overflow:hidden}
+.form-img-row img{flex:1;object-fit:cover;border-radius:8px}
+
+.awelcome{font-family:'Cormorant Garamond',serif;font-size:12px;color:var(--sage);font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.atitle{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;color:var(--ink);line-height:1.1;margin-bottom:5px}
+.asub{font-size:13px;color:var(--muted);margin-bottom:28px}
+
+.tab-row{display:flex;background:#ede8e0;border-radius:12px;padding:4px;margin-bottom:26px}
+.tab{flex:1;padding:10px;border:none;background:transparent;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;cursor:pointer;color:var(--muted);transition:all 0.25s}
+.tab.active{background:var(--white);color:var(--forest);box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+
+.form{display:none}.form.active{display:block}
+.fgroup{margin-bottom:16px}
+.fgroup label{display:block;font-size:11px;font-weight:600;color:var(--ink);margin-bottom:6px;letter-spacing:0.5px;text-transform:uppercase}
+.finput{width:100%;padding:13px 16px;border:1.5px solid #ddd;border-radius:10px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--ink);background:var(--white);outline:none;transition:all 0.2s}
+.finput:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(58,125,92,0.1)}
+
+.btn-main{width:100%;padding:14px;margin-top:6px;background:var(--forest);color:var(--white);border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.3s;letter-spacing:0.3px}
+.btn-main:hover{background:var(--sage);transform:translateY(-2px);box-shadow:0 8px 28px rgba(26,61,43,0.35)}
+
+.alert{padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:14px;display:none}
+.alert.err{background:#fff0f0;color:#c0392b;border:1px solid #fcc;display:block}
+.alert.ok{background:#f0fff4;color:var(--forest);border:1px solid #b7e4c7;display:block}
+
+.hint-box{margin-top:22px;padding:14px 16px;background:var(--parchment);border-radius:10px;border-left:3px solid var(--gold)}
+.hint-box p{font-size:12px;color:var(--muted);line-height:1.7}
+.hint-box strong{color:var(--forest)}
+
+.auth-panel::-webkit-scrollbar{width:4px}
+.auth-panel::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- LEFT VISUAL -->
+<div class="visual-panel">
+  <div class="bg-image"></div>
+  <div class="overlay"></div>
+  <div class="particles" id="ptcls"></div>
+
+  <div class="panel-content">
+    <div class="brand">
+      <div class="brand-mark">📚</div>
+      <div class="brand-text">Archive<span>X</span></div>
+    </div>
+
+    <div>
+      <div class="hero-tag">✦ &nbsp;AI-Powered Library System</div>
+      <h1 class="hero-h1">Where Every<br/>Book Finds<br/>Its <em>Reader.</em></h1>
+      <p class="hero-p">Discover thousands of books, get mood-based AI recommendations, issue and return in seconds — your entire library experience, reimagined.</p>
+      <div class="pills">
+        <div class="pill"><div class="pdot"></div>Smart AI Suggestions</div>
+        <div class="pill"><div class="pdot"></div>10,000+ Books</div>
+        <div class="pill"><div class="pdot"></div>Real-time Availability</div>
+        <div class="pill"><div class="pdot"></div>Instant Issue &amp; Return</div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="sitem"><div class="snum">10K+</div><div class="slabel">Books in Library</div></div>
+      <div class="sitem"><div class="snum">AI</div><div class="slabel">Mood Matching</div></div>
+      <div class="sitem"><div class="snum">24/7</div><div class="slabel">Online Access</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT AUTH -->
+<div class="auth-panel">
+  <div class="auth-inner">
+
+    <!-- Mini image collage -->
+    <div class="form-img-row">
+      <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&q=80" alt="books"/>
+      <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=300&q=80" alt="library"/>
+      <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=300&q=80" alt="reading"/>
+    </div>
+
+    <div class="awelcome">Welcome to ArchiveX</div>
+    <h1 class="atitle">Sign in to<br/>your library</h1>
+    <p class="asub">Access thousands of books and your AI librarian</p>
+
+    <div class="tab-row">
+      <button class="tab active" onclick="switchTab('login',this)">Sign In</button>
+      <button class="tab" onclick="switchTab('register',this)">Register</button>
+    </div>
+
+    <div class="alert" id="alert"></div>
+
+    <!-- LOGIN -->
+    <div class="form active" id="form-login">
+      <div class="fgroup"><label>Email Address</label><input class="finput" type="email" id="l-email" placeholder="you@example.com"/></div>
+      <div class="fgroup"><label>Password</label><input class="finput" type="password" id="l-pass" placeholder="Your password" onkeypress="if(event.key==='Enter')doLogin()"/></div>
+      <button class="btn-main" onclick="doLogin()">Sign In to Library →</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="form" id="form-register">
+      <div class="fgroup"><label>Full Name</label><input class="finput" type="text" id="r-name" placeholder="Your full name"/></div>
+      <div class="fgroup"><label>Email Address</label><input class="finput" type="email" id="r-email" placeholder="you@example.com"/></div>
+      <div class="fgroup"><label>Password</label><input class="finput" type="password" id="r-pass" placeholder="Choose a password" onkeypress="if(event.key==='Enter')doRegister()"/></div>
+      <button class="btn-main" onclick="doRegister()">Create Account →</button>
+    </div>
+
+    <div class="hint-box">
+      <p>🔑 <strong>Demo Admin Login:</strong><br/>Email: <strong>admin@library.com</strong><br/>Password: <strong>admin123</strong></p>
+    </div>
+  </div>
+</div>
+
+<script>
+const API='http://localhost:3000';
+// Particles
+const pc=document.getElementById('ptcls');
+for(let i=0;i<20;i++){const p=document.createElement('div');p.className='particle';p.style.cssText=`left:${Math.random()*100}%;animation-duration:${9+Math.random()*14}s;animation-delay:${Math.random()*12}s;width:${1.5+Math.random()*2.5}px;height:${1.5+Math.random()*2.5}px`;pc.appendChild(p)}
+
+function switchTab(t,el){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.form').forEach(x=>x.classList.remove('active'));document.getElementById('form-'+t).classList.add('active');document.getElementById('alert').className='alert'}
+function showAlert(m,t){const a=document.getElementById('alert');a.textContent=m;a.className='alert '+(t==='error'?'err':'ok')}
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim(),password=document.getElementById('l-pass').value.trim();
+  if(!email||!password)return showAlert('Please fill in all fields.','error');
+  try{const res=await fetch(`${API}/api/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});const data=await res.json();if(!res.ok)return showAlert(data.error,'error');localStorage.setItem('user',JSON.stringify(data.user));window.location.href='dashboard.html'}
+  catch{showAlert('Cannot reach server. Is node server.js running?','error')}
+}
+async function doRegister(){
+  const name=document.getElementById('r-name').value.trim(),email=document.getElementById('r-email').value.trim(),password=document.getElementById('r-pass').value.trim();
+  if(!name||!email||!password)return showAlert('Please fill in all fields.','error');
+  try{const res=await fetch(`${API}/api/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password})});const data=await res.json();if(!res.ok)return showAlert(data.error,'error');showAlert('Account created! Please sign in.','success');document.querySelector('.tab').click()}
+  catch{showAlert('Cannot reach server.','error')}
+}
+if(localStorage.getItem('user'))window.location.href='dashboard.html';
+</script>
+</body>
+</html>
