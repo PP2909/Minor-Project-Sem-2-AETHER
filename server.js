@@ -1,11 +1,11 @@
-server.js
-// server.js - Library Management System Backend
 
+// server.js - Library Management System Backend
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const db = require("./db");
 const Groq = require("groq-sdk");
-const groq = new Groq({ apiKey: "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" });
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const app = express();
 const PORT = 3000;
