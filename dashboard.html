@@ -1,0 +1,571 @@
+ArchiveX<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ArchiveX— Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#0f1923;--forest:#1a3d2b;--sage:#3a7d5c;--mint:#74c69d;
+  --cream:#fdf8f0;--parchment:#f5ede0;--gold:#c9a84c;--gold-light:#e8c97e;
+  --white:#ffffff;--muted:#8a8a8a;--bg:#f2f4f2;--sw:272px;
+}
+*{scrollbar-width:thin;scrollbar-color:#ccc transparent}
+body{font-family:'Outfit',sans-serif;background:var(--bg);display:flex;min-height:100vh}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{width:var(--sw);background:var(--ink);min-height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;overflow:hidden}
+.sidebar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:200px;background:linear-gradient(to top,rgba(26,61,43,0.3),transparent);pointer-events:none}
+
+.sb-top{padding:28px 22px 20px;border-bottom:1px solid rgba(255,255,255,0.07)}
+.sb-brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.sb-mark{width:42px;height:42px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.sb-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--white)}
+.sb-name span{color:var(--gold-light)}
+
+/* Sidebar image banner */
+.sb-img-banner{width:100%;height:90px;border-radius:12px;overflow:hidden;position:relative}
+.sb-img-banner img{width:100%;height:100%;object-fit:cover}
+.sb-img-banner::after{content:'📚 Your Library';position:absolute;inset:0;background:rgba(15,25,35,0.55);display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:500}
+
+.sb-nav{padding:18px 12px;flex:1}
+.nav-section{font-size:9px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;padding:0 10px;margin:14px 0 6px}
+.nav-btn{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;color:rgba(255,255,255,0.65);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;margin-bottom:2px;border:none;background:transparent;width:100%;text-align:left}
+.nav-btn:hover,.nav-btn.active{background:rgba(255,255,255,0.12);color:var(--white)}
+.nav-btn.active{background:linear-gradient(90deg,rgba(58,125,92,0.35),rgba(58,125,92,0.1));border-left:2px solid var(--mint)}
+.nav-icon{font-size:17px;width:22px;text-align:center}
+
+.sb-footer{padding:18px 20px;border-top:1px solid rgba(255,255,255,0.07);position:relative;z-index:1}
+.user-card{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.u-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--sage),var(--mint));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;flex-shrink:0}
+.u-name{font-size:13px;font-weight:500;color:var(--white)}
+.u-role{font-size:11px;color:rgba(255,255,255,0.4)}
+.logout-btn{width:100%;padding:9px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:rgba(255,255,255,0.6);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;transition:all 0.2s}
+.logout-btn:hover{background:rgba(220,53,69,0.3);color:#ff8a8a;border-color:rgba(220,53,69,0.3)}
+
+/* ═══ MAIN ═══ */
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* TOPBAR */
+.topbar{background:var(--white);padding:0 32px;height:68px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eaeaea;position:sticky;top:0;z-index:50;box-shadow:0 1px 8px rgba(0,0,0,0.04)}
+.topbar-left h1{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--ink)}
+.topbar-left p{font-size:12px;color:var(--muted)}
+.search-wrap{display:flex;align-items:center;background:var(--bg);border:1.5px solid #e5e5e5;border-radius:12px;padding:9px 16px;gap:10px;width:300px;transition:all 0.2s}
+.search-wrap:focus-within{border-color:var(--sage);background:white;box-shadow:0 0 0 3px rgba(58,125,92,0.08)}
+.search-wrap input{border:none;background:transparent;font-family:'Outfit',sans-serif;font-size:13px;color:var(--ink);outline:none;flex:1}
+.search-icon{color:var(--muted);font-size:16px}
+
+/* PAGES */
+.page{display:none;padding:28px 32px;animation:fadeIn 0.3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* HERO BANNER */
+.hero-banner{
+  border-radius:20px;overflow:hidden;height:220px;
+  position:relative;margin-bottom:28px;
+  background:url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&q=80') center/cover;
+}
+.hero-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,25,35,0.85) 0%,rgba(15,25,35,0.4) 60%,transparent 100%)}
+.hero-banner-content{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:0 40px}
+.hero-banner-content h2{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:700;color:white;margin-bottom:8px}
+.hero-banner-content h2 em{color:var(--gold-light);font-style:italic}
+.hero-banner-content p{color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:18px}
+.hero-banner-btn{display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--ink);padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all 0.2s}
+.hero-banner-btn:hover{background:var(--gold-light);transform:translateY(-1px)}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-card{background:var(--white);border-radius:16px;padding:20px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 8px rgba(0,0,0,0.04);transition:transform 0.2s}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.si-g{background:#dcf5e7}.si-b{background:#dbeafe}.si-a{background:#fef3c7}.si-r{background:#fee2e2}
+.stat-label{font-size:12px;color:var(--muted);margin-bottom:4px}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--ink);line-height:1}
+
+/* SECTION */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--ink)}
+.sec-link{font-size:13px;color:var(--sage);cursor:pointer;font-weight:500}
+.sec-link:hover{text-decoration:underline}
+
+/* BOOK CARDS */
+.books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:18px}
+.book-card{background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.05);transition:all 0.3s;cursor:pointer}
+.book-card:hover{transform:translateY(-5px);box-shadow:0 12px 30px rgba(0,0,0,0.12)}
+.book-cover{height:170px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.book-cover img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s}
+.book-card:hover .book-cover img{transform:scale(1.06)}
+.book-cover-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px}
+.avail-tag{position:absolute;top:10px;right:10px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;backdrop-filter:blur(8px)}
+.avail-tag.yes{background:rgba(116,198,157,0.9);color:#fff}
+.avail-tag.no{background:rgba(220,53,69,0.85);color:#fff}
+.book-info{padding:14px}
+.book-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:3px;display:-webkit-box;-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4}
+.book-author{font-size:11px;color:var(--muted);margin-bottom:11px}
+.btn-issue{width:100%;padding:8px;background:var(--forest);color:white;border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s}
+.btn-issue:hover{background:var(--sage)}
+.btn-issue:disabled{background:#e9ecef;color:#aaa;cursor:not-allowed}
+
+/* TABLE */
+.tbl-wrap{background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,0.05)}
+table{width:100%;border-collapse:collapse}
+th{background:#f8f9fa;padding:13px 18px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+td{padding:13px 18px;font-size:13px;color:var(--ink);border-top:1px solid #f1f3f4}
+tr:hover td{background:#fafbfa}
+.badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.badge.issued{background:#dbeafe;color:#1d4ed8}
+.badge.returned{background:#dcf5e7;color:var(--forest)}
+.btn-ret{padding:5px 14px;background:#fff3e0;color:#e65100;border:1px solid #ffcc80;border-radius:7px;font-family:'Outfit',sans-serif;font-size:11px;cursor:pointer;transition:all 0.2s}
+.btn-ret:hover{background:#e65100;color:white;border-color:transparent}
+
+/* CATEGORY BANNERS */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.cat-card{border-radius:14px;overflow:hidden;height:120px;position:relative;cursor:pointer;transition:transform 0.25s}
+.cat-card:hover{transform:scale(1.02)}
+.cat-card img{width:100%;height:100%;object-fit:cover}
+.cat-card::after{position:absolute;inset:0;display:flex;align-items:flex-end;padding:14px;font-size:15px;font-weight:600;color:white;font-family:'Cormorant Garamond',serif}
+.cat-card.fiction::after{content:'Fiction & Literature';background:linear-gradient(to top,rgba(26,61,43,0.85),transparent)}
+.cat-card.science::after{content:'Science & Tech';background:linear-gradient(to top,rgba(15,25,35,0.85),transparent)}
+.cat-card.history::after{content:'History & Bio';background:linear-gradient(to top,rgba(90,50,10,0.85),transparent)}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:26px}
+.pg-btn{padding:8px 14px;border:1.5px solid #ddd;border-radius:8px;background:white;color:var(--ink);font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all 0.2s}
+.pg-btn:hover,.pg-btn.active{background:var(--forest);color:white;border-color:var(--forest)}
+.pg-btn:disabled{opacity:0.35;cursor:not-allowed}
+
+/* TOAST */
+.toast{position:fixed;bottom:110px;right:30px;padding:14px 20px;border-radius:12px;font-size:13px;font-weight:500;z-index:9999;transform:translateY(20px);opacity:0;transition:all 0.35s;pointer-events:none;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{background:var(--forest);color:white}
+.toast.err{background:#c0392b;color:white}
+
+/* SPINNER */
+.spinner{text-align:center;padding:60px;font-size:28px;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:56px 20px;color:var(--muted)}
+.empty .ei{font-size:44px;margin-bottom:12px}
+
+/* SEARCH BAR */
+.search-page-bar{display:flex;gap:12px;margin-bottom:22px}
+.search-page-bar input{flex:1;padding:13px 18px;border:1.5px solid #ddd;border-radius:12px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--ink);outline:none;background:white;transition:all 0.2s}
+.search-page-bar input:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(58,125,92,0.08)}
+.search-page-bar button{padding:13px 26px;background:var(--forest);color:white;border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s}
+.search-page-bar button:hover{background:var(--sage)}
+
+/* ADMIN FORM */
+.admin-form-wrap{background:white;border-radius:16px;padding:26px;margin-bottom:24px;box-shadow:0 1px 8px rgba(0,0,0,0.05);display:none}
+.admin-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.af-group label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.af-group input{width:100%;padding:11px 14px;border:1.5px solid #ddd;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--ink);outline:none}
+.af-group input:focus{border-color:var(--sage)}
+.af-btns{display:flex;gap:10px}
+.af-btns button{padding:10px 22px;border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer}
+.btn-add{background:var(--forest);color:white}
+.btn-cancel{background:#f1f3f4;color:var(--muted)}
+
+/* AI CHAT */
+#chat-fab{position:fixed;bottom:30px;right:30px;width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,var(--forest),var(--sage));color:white;font-size:26px;border:none;cursor:pointer;box-shadow:0 4px 24px rgba(26,61,43,0.45);z-index:999;transition:transform 0.25s}
+#chat-fab:hover{transform:scale(1.1)}
+#chat-box{position:fixed;bottom:106px;right:30px;width:365px;height:510px;background:white;border-radius:22px;box-shadow:0 12px 48px rgba(0,0,0,0.18);display:none;flex-direction:column;z-index:999;overflow:hidden}
+#chat-box.open{display:flex}
+.ch-hdr{background:linear-gradient(135deg,var(--forest),var(--sage));padding:18px 20px;display:flex;align-items:center;gap:12px}
+.ch-av{width:40px;height:40px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,0.3);flex-shrink:0}
+.ch-av img{width:100%;height:100%;object-fit:cover}
+.ch-hdr h4{font-size:14px;font-weight:600;color:white}
+.ch-hdr p{font-size:11px;color:rgba(255,255,255,0.7)}
+.ch-msgs{flex:1;overflow-y:auto;padding:14px;background:#f8faf8;display:flex;flex-direction:column;gap:10px}
+.cm{max-width:86%;padding:10px 14px;border-radius:14px;font-size:12.5px;line-height:1.55;word-wrap:break-word}
+.cm.bot{background:white;color:var(--ink);align-self:flex-start;border-bottom-left-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,0.07)}
+.cm.user{background:linear-gradient(135deg,var(--forest),var(--sage));color:white;align-self:flex-end;border-bottom-right-radius:4px}
+.cm.typing{background:white;color:var(--muted);align-self:flex-start;font-style:italic}
+.ch-chips{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;background:#f8faf8;border-top:1px solid #eee}
+.chip{background:white;border:1px solid #e0e0e0;border-radius:20px;padding:4px 10px;font-size:11px;cursor:pointer;color:var(--muted);transition:all 0.2s}
+.chip:hover{background:var(--forest);color:white;border-color:transparent}
+.ch-input-row{display:flex;padding:10px 14px;gap:8px;background:white;border-top:1px solid #eee}
+.ch-input-row input{flex:1;border:1.5px solid #ddd;border-radius:20px;padding:9px 14px;font-family:'Outfit',sans-serif;font-size:12px;outline:none;transition:all 0.2s}
+.ch-input-row input:focus{border-color:var(--sage)}
+.ch-send{width:38px;height:38px;border-radius:50%;background:var(--forest);color:white;border:none;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
+.ch-send:hover{background:var(--sage)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sb-top">
+    <div class="sb-brand">
+      <div class="sb-mark">📚</div>
+      <div class="sb-name">Archive<span>X</span></div>
+    </div>
+    <div class="sb-img-banner">
+      <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400&q=80" alt="library"/>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-section">Main</div>
+    <button class="nav-btn active" id="nav-home" onclick="showPage('home',this)"><span class="nav-icon">🏠</span>Dashboard</button>
+    <button class="nav-btn" id="nav-books" onclick="showPage('books',this)"><span class="nav-icon">📖</span>Browse Books</button>
+    <button class="nav-btn" id="nav-issued" onclick="showPage('issued',this)"><span class="nav-icon">🔖</span>My Books</button>
+    <button class="nav-btn" id="nav-search" onclick="showPage('search',this)"><span class="nav-icon">🔍</span>Search</button>
+    <div class="nav-section" id="admin-sec" style="display:none">Admin</div>
+    <button class="nav-btn" id="nav-admin" style="display:none" onclick="showPage('admin',this)"><span class="nav-icon">⚙️</span>Manage Books</button>
+  </nav>
+  <div class="sb-footer">
+    <div class="user-card">
+      <div class="u-avatar" id="u-av">?</div>
+      <div><div class="u-name" id="u-nm">...</div><div class="u-role" id="u-rl">student</div></div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">→ Sign Out</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1 id="pg-title">Dashboard</h1>
+      <p id="pg-sub">Good to see you!</p>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search books..." id="qsearch" oninput="handleQSearch(this.value)"/>
+    </div>
+  </div>
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="hero-banner-content">
+        <h2>Discover Your Next<br/><em>Great Read</em></h2>
+        <p>Thousands of books waiting for you — powered by AI recommendations</p>
+        <button class="hero-banner-btn" onclick="showPage('books',document.getElementById('nav-books'))">Browse Library →</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon si-g">📚</div><div><div class="stat-label">Total Books</div><div class="stat-val" id="s-total">—</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-b">✅</div><div><div class="stat-label">Available Now</div><div class="stat-val" id="s-avail">—</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-a">🔖</div><div><div class="stat-label">My Issued</div><div class="stat-val" id="s-issued">—</div></div></div>
+      <div class="stat-card"><div class="stat-icon si-r">⏰</div><div><div class="stat-label">Due This Week</div><div class="stat-val" id="s-due">0</div></div></div>
+    </div>
+
+    <!-- Category Banners -->
+    <div class="sec-hdr"><h2 class="sec-title">Browse by Category</h2></div>
+    <div class="cat-grid">
+      <div class="cat-card fiction" onclick="catSearch('Fiction')"><img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80" alt="fiction"/></div>
+      <div class="cat-card science" onclick="catSearch('Science')"><img src="https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=400&q=80" alt="science"/></div>
+      <div class="cat-card history" onclick="catSearch('History')"><img src="https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=400&q=80" alt="history"/></div>
+    </div>
+
+    <!-- Recent Books -->
+    <div class="sec-hdr">
+      <h2 class="sec-title">Recently Added</h2>
+      <span class="sec-link" onclick="showPage('books',document.getElementById('nav-books'))">View all →</span>
+    </div>
+    <div class="books-grid" id="home-grid"><div class="spinner">⏳</div></div>
+  </div>
+
+  <!-- BROWSE PAGE -->
+  <div class="page" id="page-books">
+    <div class="sec-hdr">
+      <h2 class="sec-title">All Books</h2>
+      <span id="books-count" style="font-size:13px;color:var(--muted)"></span>
+    </div>
+    <div class="books-grid" id="books-grid"><div class="spinner">⏳</div></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <!-- ISSUED PAGE -->
+  <div class="page" id="page-issued">
+    <div class="sec-hdr"><h2 class="sec-title">My Issued Books</h2></div>
+    <!-- Reading image banner -->
+    <div style="border-radius:14px;overflow:hidden;height:130px;position:relative;margin-bottom:22px">
+      <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1200&q=80" style="width:100%;height:100%;object-fit:cover" alt="reading"/>
+      <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,25,35,0.75),transparent);display:flex;align-items:center;padding:0 28px">
+        <div><div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:white">Your Reading Journey</div><div style="font-size:13px;color:rgba(255,255,255,0.7);margin-top:4px">Track all your issued and returned books</div></div>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Book</th><th>Author</th><th>Issued On</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="issued-tbody"><tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SEARCH PAGE -->
+  <div class="page" id="page-search">
+    <div class="sec-hdr"><h2 class="sec-title">Search Books</h2></div>
+    <div class="search-page-bar">
+      <input type="text" id="s-input" placeholder="Search by title, author, or category..." onkeypress="if(event.key==='Enter')doSearch()"/>
+      <button onclick="doSearch()">Search →</button>
+    </div>
+    <div class="books-grid" id="search-grid"><div class="empty"><div class="ei">🔍</div><p>Type something to find books</p></div></div>
+  </div>
+
+  <!-- ADMIN PAGE -->
+  <div class="page" id="page-admin">
+    <div class="sec-hdr">
+      <h2 class="sec-title">Manage Books</h2>
+      <button onclick="toggleAddForm()" style="padding:10px 20px;background:var(--forest);color:white;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer">+ Add Book</button>
+    </div>
+    <div class="admin-form-wrap" id="add-form">
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:18px">Add New Book</h3>
+      <div class="admin-form-grid">
+        <div class="af-group"><label>Title *</label><input type="text" id="af-title" placeholder="Book title"/></div>
+        <div class="af-group"><label>Author</label><input type="text" id="af-author" placeholder="Author name"/></div>
+        <div class="af-group"><label>Category</label><input type="text" id="af-cat" placeholder="e.g. Fiction"/></div>
+        <div class="af-group"><label>Total Copies</label><input type="number" id="af-copies" value="3"/></div>
+      </div>
+      <div class="af-btns">
+        <button class="btn-add" onclick="addBook()">Add Book</button>
+        <button class="btn-cancel" onclick="toggleAddForm()">Cancel</button>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Title</th><th>Author</th><th>Category</th><th>Available / Total</th><th>Action</th></tr></thead>
+        <tbody id="admin-tbody"><tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted)">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- AI CHAT FAB -->
+<button id="chat-fab" onclick="toggleChat()">🤖</button>
+
+<!-- AI CHAT BOX -->
+<div id="chat-box">
+  <div class="ch-hdr">
+    <div class="ch-av"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" alt="AI"/></div>
+    <div><h4>AI Librarian</h4><p>📚 Ask me for book suggestions!</p></div>
+  </div>
+  <div class="ch-msgs" id="ch-msgs">
+    <div class="cm bot">Hi! 👋 I'm your personal AI librarian! Tell me your mood or what kind of story you're craving and I'll find the perfect book from our collection! 📚✨</div>
+  </div>
+  <div class="ch-chips">
+    <span class="chip" onclick="qchat('I feel happy and want something fun')">😊 Happy</span>
+    <span class="chip" onclick="qchat('I feel sad, need comfort')">😢 Sad</span>
+    <span class="chip" onclick="qchat('I want adventure and action')">🏔️ Adventure</span>
+    <span class="chip" onclick="qchat('I want a romance story')">💕 Romance</span>
+    <span class="chip" onclick="qchat('I want something scary or mysterious')">😱 Thriller</span>
+    <span class="chip" onclick="qchat('I want to learn something new')">🧠 Learn</span>
+  </div>
+  <div class="ch-input-row">
+    <input type="text" id="ch-in" placeholder="Tell me your mood..." onkeypress="if(event.key==='Enter')sendChat()"/>
+    <button class="ch-send" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+<script>
+const API='http://localhost:3000';
+let user=null,allBooks=[],curPage=1;
+const PER_PAGE=12;
+let qTimer=null;
+
+// COVER COLORS fallback
+const COVERS=['#d8f3dc','#dbeafe','#fef3c7','#fce7f3','#e0e7ff','#f3e8ff','#fff3e0','#e0f2f1'];
+
+window.onload=()=>{
+  const s=localStorage.getItem('user');
+  if(!s)return window.location.href='index.html';
+  user=JSON.parse(s);
+  document.getElementById('u-av').textContent=user.name.charAt(0).toUpperCase();
+  document.getElementById('u-nm').textContent=user.name;
+  document.getElementById('u-rl').textContent=user.role==='admin'?'👑 Admin':'📖 Student';
+  document.getElementById('pg-sub').textContent=`Welcome back, ${user.name.split(' ')[0]}!`;
+  if(user.role==='admin'){document.getElementById('admin-sec').style.display='block';document.getElementById('nav-admin').style.display='flex'}
+  loadHome();loadAllBooks();
+};
+
+function doLogout(){localStorage.removeItem('user');window.location.href='index.html'}
+
+function showPage(pg,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+pg).classList.add('active');
+  if(el)el.classList.add('active');
+  const titles={home:'Dashboard',books:'Browse Books',issued:'My Books',search:'Search Books',admin:'Manage Books'};
+  document.getElementById('pg-title').textContent=titles[pg]||'';
+  if(pg==='issued')loadIssued();
+  if(pg==='admin')loadAdminBooks();
+}
+
+function showToast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=`toast ${type} show`;
+  setTimeout(()=>t.className='toast',3500);
+}
+
+// ── HOME ──
+async function loadHome(){
+  try{
+    const[br,ir]=await Promise.all([fetch(`${API}/api/books`),fetch(`${API}/api/issued/${user.id}`)]);
+    const bd=await br.json(),id=await ir.json();
+    allBooks=bd.books||[];
+    const avail=allBooks.filter(b=>b.available_copies>0).length;
+    const myIssued=(id.issued_books||[]).filter(b=>b.status==='issued').length;
+    document.getElementById('s-total').textContent=allBooks.length;
+    document.getElementById('s-avail').textContent=avail;
+    document.getElementById('s-issued').textContent=myIssued;
+    renderGrid(allBooks.slice(0,8),'home-grid');
+  }catch{document.getElementById('home-grid').innerHTML='<div class="empty"><div class="ei">⚠️</div><p>Server offline. Run node server.js</p></div>'}
+}
+
+function catSearch(cat){
+  showPage('search',document.getElementById('nav-search'));
+  document.getElementById('s-input').value=cat;
+  doSearch();
+}
+
+// ── ALL BOOKS ──
+async function loadAllBooks(){
+  if(allBooks.length===0){try{const r=await fetch(`${API}/api/books`);const d=await r.json();allBooks=d.books||[]}catch{return}}
+  renderBooksPage();
+}
+function renderBooksPage(){
+  const start=(curPage-1)*PER_PAGE;
+  renderGrid(allBooks.slice(start,start+PER_PAGE),'books-grid');
+  document.getElementById('books-count').textContent=`${allBooks.length} books`;
+  renderPagination();
+}
+function renderPagination(){
+  const total=Math.ceil(allBooks.length/PER_PAGE);
+  const pg=document.getElementById('pagination');pg.innerHTML='';
+  const pb=(txt,page,disabled)=>{const b=document.createElement('button');b.className='pg-btn'+(page===curPage?' active':'');b.textContent=txt;b.disabled=disabled;b.onclick=()=>{curPage=page;renderBooksPage();window.scrollTo(0,0)};return b};
+  pg.appendChild(pb('← Prev',curPage-1,curPage===1));
+  for(let i=Math.max(1,curPage-2);i<=Math.min(total,curPage+2);i++)pg.appendChild(pb(i,i,false));
+  pg.appendChild(pb('Next →',curPage+1,curPage===total));
+}
+
+// ── RENDER GRID ──
+function renderGrid(books,id){
+  const g=document.getElementById(id);
+  if(!books||!books.length){g.innerHTML='<div class="empty"><div class="ei">📭</div><p>No books found</p></div>';return}
+  g.innerHTML=books.map((b,i)=>{
+    const bg=COVERS[i%COVERS.length];
+    const avail=b.available_copies>0;
+    const cover=b.image_url
+      ?`<img src="${b.image_url}" alt="${b.title.replace(/"/g,'')}" loading="lazy" onerror="this.parentElement.style.background='${bg}';this.remove()"/>`
+      :`<div class="book-cover-fallback" style="background:${bg}">📗</div>`;
+    return`<div class="book-card">
+      <div class="book-cover">${cover}<span class="avail-tag ${avail?'yes':'no'}">${avail?b.available_copies+' left':'Unavailable'}</span></div>
+      <div class="book-info">
+        <div class="book-title">${b.title}</div>
+        <div class="book-author">${b.author||'Unknown'}</div>
+        <button class="btn-issue" ${!avail?'disabled':''} onclick="issueBook(${b.id},'${b.title.replace(/'/g,"\\'").replace(/"/g,'')}')">
+          ${avail?'+ Issue Book':'Not Available'}
+        </button>
+      </div>
+    </div>`
+  }).join('');
+}
+
+// ── ISSUE ──
+async function issueBook(id,title){
+  try{
+    const r=await fetch(`${API}/api/issue`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:user.id,book_id:id})});
+    const d=await r.json();
+    if(!r.ok)return showToast(d.error,'err');
+    showToast(`✅ "${title}" issued! Due: ${d.due_date}`);
+    allBooks=[];await loadHome();await loadAllBooks();
+  }catch{showToast('Server error!','err')}
+}
+
+// ── ISSUED BOOKS ──
+async function loadIssued(){
+  const tb=document.getElementById('issued-tbody');
+  try{
+    const r=await fetch(`${API}/api/issued/${user.id}`);
+    const d=await r.json();
+    const books=d.issued_books||[];
+    if(!books.length){tb.innerHTML='<tr><td colspan="6"><div class="empty"><div class="ei">📭</div><p>No books issued yet</p></div></td></tr>';return}
+    tb.innerHTML=books.map(b=>`<tr>
+      <td><strong>${b.title}</strong></td>
+      <td>${b.author||'—'}</td>
+      <td>${b.issue_date||'—'}</td>
+      <td>${b.due_date||'—'}</td>
+      <td><span class="badge ${b.status}">${b.status}</span></td>
+      <td>${b.status==='issued'?`<button class="btn-ret" onclick="returnBook(${b.book_id},'${b.title.replace(/'/g,"\\'")}')">Return</button>`:'—'}</td>
+    </tr>`).join('');
+  }catch{tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted)">Error loading</td></tr>'}
+}
+
+// ── RETURN ──
+async function returnBook(id,title){
+  try{
+    const r=await fetch(`${API}/api/return`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:user.id,book_id:id})});
+    const d=await r.json();
+    if(!r.ok)return showToast(d.error,'err');
+    showToast(`✅ "${title}" returned!`);
+    allBooks=[];loadIssued();loadHome();loadAllBooks();
+  }catch{showToast('Server error!','err')}
+}
+
+// ── SEARCH ──
+function handleQSearch(v){clearTimeout(qTimer);if(!v.trim())return;qTimer=setTimeout(()=>{showPage('search',document.getElementById('nav-search'));document.getElementById('s-input').value=v;doSearch()},450)}
+async function doSearch(){
+  const q=document.getElementById('s-input').value.trim();
+  if(!q)return;
+  document.getElementById('search-grid').innerHTML='<div class="spinner">⏳</div>';
+  try{const r=await fetch(`${API}/api/books/search?query=${encodeURIComponent(q)}`);const d=await r.json();renderGrid(d.books||[],'search-grid')}
+  catch{document.getElementById('search-grid').innerHTML='<div class="empty"><div class="ei">⚠️</div><p>Search failed</p></div>'}
+}
+
+// ── ADMIN ──
+function toggleAddForm(){const f=document.getElementById('add-form');f.style.display=f.style.display==='block'?'none':'block'}
+async function loadAdminBooks(){
+  const tb=document.getElementById('admin-tbody');
+  try{
+    const r=await fetch(`${API}/api/books`);const d=await r.json();
+    const books=(d.books||[]).slice(0,80);
+    tb.innerHTML=books.map(b=>`<tr>
+      <td><strong>${b.title}</strong></td><td>${b.author||'—'}</td><td>${b.category||'—'}</td>
+      <td>${b.available_copies} / ${b.total_copies}</td>
+      <td><button onclick="delBook(${b.id},'${b.title.replace(/'/g,"\\'")}'))" style="padding:5px 12px;background:#fee2e2;color:#c0392b;border:none;border-radius:6px;cursor:pointer;font-size:11px;font-family:'Outfit',sans-serif">Delete</button></td>
+    </tr>`).join('');
+  }catch{tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted)">Error</td></tr>'}
+}
+async function addBook(){
+  const title=document.getElementById('af-title').value.trim();
+  if(!title)return showToast('Title is required!','err');
+  try{
+    const r=await fetch(`${API}/api/admin/books`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,author:document.getElementById('af-author').value,category:document.getElementById('af-cat').value,total_copies:document.getElementById('af-copies').value})});
+    const d=await r.json();
+    if(!r.ok)return showToast(d.error,'err');
+    showToast('✅ Book added!');toggleAddForm();loadAdminBooks();
+  }catch{showToast('Error!','err')}
+}
+async function delBook(id,title){
+  if(!confirm(`Delete "${title}"?`))return;
+  try{const r=await fetch(`${API}/api/admin/books/${id}`,{method:'DELETE'});const d=await r.json();if(!r.ok)return showToast(d.error,'err');showToast('✅ Deleted!');loadAdminBooks()}
+  catch{showToast('Error!','err')}
+}
+
+// ── AI CHAT ──
+function toggleChat(){document.getElementById('chat-box').classList.toggle('open')}
+function qchat(t){document.getElementById('ch-in').value=t;sendChat()}
+function addCm(txt,type){const m=document.getElementById('ch-msgs');const d=document.createElement('div');d.className=`cm ${type}`;d.innerHTML=txt.replace(/\n/g,'<br>');m.appendChild(d);m.scrollTop=m.scrollHeight;return d}
+async function sendChat(){
+  const inp=document.getElementById('ch-in');const msg=inp.value.trim();if(!msg)return;
+  addCm(msg,'user');inp.value='';
+  const t=addCm('✍️ Finding perfect books...','typing');
+  try{
+    const r=await fetch(`${API}/api/ai/suggest`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});
+    const d=await r.json();t.remove();
+    addCm(d.reply||'Sorry, try again!','bot');
+  }catch{t.remove();addCm('❌ AI offline. Check server!','bot')}
+}
+</script>
+</body>
+</html>
